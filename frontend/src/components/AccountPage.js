@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { authAPI, ordersAPI } from '../api';
 import { placeholderImg } from '../utils/placeholder';
 
@@ -29,11 +29,6 @@ export default function AccountPage({ navigate, user, handleLogout, setUser }) {
   const [newAddress, setNewAddress] = useState({
     label: '', address: '', city: '', province: '', postal_code: '',
   });
-
-  /* ── profile picture state ── */
-  const [avatarPreview, setAvatarPreview] = useState(user?.avatar || '');
-  const [avatarError, setAvatarError] = useState('');
-  const avatarInputRef = useRef(null);
 
   useEffect(() => {
     if (!user) { navigate('login'); return; }
@@ -93,45 +88,6 @@ export default function AccountPage({ navigate, user, handleLogout, setUser }) {
     } finally {
       setProfileLoading(false);
     }
-  };
-
-  /* ── Profile picture upload ──
-     Stored as a base64 data URL on the user object in localStorage.
-     No backend call needed — works immediately like the admin image preview pattern. */
-  const handleAvatarChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setAvatarError('');
-
-    if (!file.type.startsWith('image/')) {
-      setAvatarError('Please choose an image file');
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      setAvatarError('Image must be under 5MB');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result;
-      setAvatarPreview(dataUrl);
-
-      const updatedUser = { ...user, avatar: dataUrl };
-      localStorage.setItem('aslivo_current_user', JSON.stringify(updatedUser));
-      if (typeof setUser === 'function') setUser(updatedUser);
-    };
-    reader.onerror = () => setAvatarError('Could not read that image. Try another file.');
-    reader.readAsDataURL(file);
-  };
-
-  const handleRemoveAvatar = () => {
-    setAvatarPreview('');
-    setAvatarError('');
-    const updatedUser = { ...user, avatar: '' };
-    localStorage.setItem('aslivo_current_user', JSON.stringify(updatedUser));
-    if (typeof setUser === 'function') setUser(updatedUser);
   };
 
   const handleChangePassword = async () => {
@@ -196,6 +152,8 @@ export default function AccountPage({ navigate, user, handleLogout, setUser }) {
 
   if (!user) return null;
 
+  const initial = (user.firstName?.charAt(0) || user.email?.charAt(0) || '?').toUpperCase();
+
   return (
     <div className="min-h-screen bg-cream pt-28 font-sans">
 
@@ -204,50 +162,9 @@ export default function AccountPage({ navigate, user, handleLogout, setUser }) {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-5 flex-wrap">
 
-            {/* ── Avatar with upload ── */}
-            <div className="relative flex-shrink-0 group">
-              <input
-                ref={avatarInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarChange}
-                style={{ display: 'none' }}
-              />
-
-              <button
-                onClick={() => avatarInputRef.current?.click()}
-                title="Change profile picture"
-                className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden flex items-center justify-center text-2xl md:text-3xl font-bold text-navy-500 shadow-gold cursor-pointer border-none p-0 relative"
-                style={{
-                  background: avatarPreview
-                    ? `url(${avatarPreview}) center/cover no-repeat`
-                    : 'linear-gradient(135deg,#c9a96e,#b8935a)',
-                }}
-              >
-                {!avatarPreview && (user.firstName?.charAt(0) || user.email?.charAt(0) || '?').toUpperCase()}
-
-                {/* Hover overlay with camera icon */}
-                <span
-                  className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  style={{ background: 'rgba(13,27,42,0.55)' }}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                    <circle cx="12" cy="13" r="4" />
-                  </svg>
-                </span>
-              </button>
-
-              {avatarPreview && (
-                <button
-                  onClick={handleRemoveAvatar}
-                  title="Remove profile picture"
-                  className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-red-500 text-white text-xs flex items-center justify-center border-2 border-white cursor-pointer"
-                  style={{ lineHeight: 1 }}
-                >
-                  ×
-                </button>
-              )}
+            {/* ── Avatar — initial letter only, no upload ── */}
+            <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-2xl md:text-3xl font-bold text-navy-500 shadow-gold flex-shrink-0">
+              {initial}
             </div>
 
             <div>
@@ -255,9 +172,6 @@ export default function AccountPage({ navigate, user, handleLogout, setUser }) {
                 {user.firstName || user.lastName ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : 'Welcome'}
               </h1>
               <p className="text-sm text-white/50">{user.email}</p>
-              {avatarError && (
-                <p className="text-xs text-red-300 mt-1">{avatarError}</p>
-              )}
             </div>
           </div>
         </div>
