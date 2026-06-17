@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { productsAPI } from '../api';
 
-const BASE_URL = 'http://127.0.0.1:8000';
+// const BASE_URL = 'http://127.0.0.1:8000';
+const BASE_URL = 'https://aslivo-store-2.onrender.com';
 
 const getImageUrl = (url) => {
   if (!url) return 'https://via.placeholder.com/300x400?text=No+Image';
