@@ -34,7 +34,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",          # ← must stay FIRST
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -105,20 +105,27 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-CORS_ALLOWED_ORIGINS = os.getenv(
-    "CORS_ALLOWED_ORIGINS",
-    "http://localhost:3000,http://127.0.0.1:3000"
-).split(",")
+# ── CORS ─────────────────────────────────────────────────────────────────────
+# FIX 1: Single source of truth — no more double assignment that wiped env var.
+# Always includes both live frontend URL and local dev origins.
 CORS_ALLOWED_ORIGINS = [
-    "https://aslivo-store-3.onrender.com",
+    "https://aslivo-store-3.onrender.com",   # live frontend
+    "https://aslivo-store-2.onrender.com",   # backend itself (Render health checks)
+    "http://localhost:3000",                  # local dev
+    "http://127.0.0.1:3000",                 # local dev alternate
 ]
 
-CSRF_TRUSTED_ORIGINS = os.getenv(
-    "CSRF_TRUSTED_ORIGINS",
-    "http://localhost:3000,http://127.0.0.1:3000"
-).split(",")
-
 CORS_ALLOW_CREDENTIALS = True
+
+# ── CSRF ─────────────────────────────────────────────────────────────────────
+# FIX 2: CSRF trusted origins must include the live frontend — missing this
+# caused the 400 error on /api/auth/register/ and any POST endpoint.
+CSRF_TRUSTED_ORIGINS = [
+    "https://aslivo-store-3.onrender.com",   # live frontend
+    "https://aslivo-store-2.onrender.com",   # backend
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
 
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Karachi"
