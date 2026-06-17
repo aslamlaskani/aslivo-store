@@ -1,23 +1,19 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Python / Django
+venv/
+__pycache__/
+*.pyc
+.env
+backend/backend/.env
+backend/db.sqlite3
+staticfiles/
+media/
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# React
+node_modules/
+frontend/node_modules/
+build/
+frontend/build/
 
-# testing
-/coverage
-
-# production
-/build
-
-# misc
+# Misc
 .DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+*.log
