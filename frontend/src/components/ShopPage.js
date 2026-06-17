@@ -214,8 +214,8 @@ export default function ShopPage({ navigate, addToCart, wishlist, toggleWishlist
             boxShadow: hovered ? '0 6px 20px rgba(0,0,0,0.08)' : '0 1px 4px rgba(0,0,0,0.04)',
             transition:'border-color .2s, box-shadow .2s' }}>
           <div style={{ position:'relative', width:'100px', minWidth:'100px', background:'#f7f4ef', overflow:'hidden' }}>
-            <img src={product.primary_image || 'placeholderImg(200,240)'} alt={product.name}
-              onError={e => { e.target.src='placeholderImg(200,240)'; }}
+            <img src={product.primary_image || placeholderImg(200,240)} alt={product.name}
+              onError={e => { e.target.src=placeholderImg(200,240); }}
               style={{ width:'100%', height:'100%', objectFit:'cover', display:'block',
                 transform: hovered ? 'scale(1.05)' : 'scale(1)', transition:'transform .5s' }} />
             {cfg && badgeLabel && (
@@ -272,8 +272,8 @@ export default function ShopPage({ navigate, addToCart, wishlist, toggleWishlist
         {/* image */}
         <div style={{ position:'relative', paddingTop:'128%', overflow:'hidden',
           background:'#f7f4ef', flexShrink:0 }}>
-          <img src={product.primary_image || 'placeholderImg(300,380)'} alt={product.name}
-            onError={e => { e.target.src='placeholderImg(300,380)'; }}
+          <img src={product.primary_image || placeholderImg(300,380)} alt={product.name}
+            onError={e => { e.target.src=placeholderImg(300,380); }}
             style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover',
               transform: hovered ? 'scale(1.06)' : 'scale(1)',
               transition:'transform .6s cubic-bezier(.25,.46,.45,.94)' }} />
