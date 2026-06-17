@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ordersAPI } from '../api';
 import { placeholderImg } from '../utils/placeholder';
-import { placeholderImg } from '../utils/placeholder';
 /* ── Payment account details ── */
 const PAYMENT_INFO = {
   jazzcash: {
@@ -587,8 +586,7 @@ export default function CheckoutPage({ cart, navigate, setCart, user }) {
                   {cart.map(item => (
                     <div key={`${item.id}-${item.size}`} className="flex gap-4 items-center py-3 border-b border-gray-50">
                       <img
-                        src={item.primary_image||item.images?.[0]?.image_url||item.images?.[0]||'placeholderImg(48,56)'}
-                        alt={item.name}
+                      src={item.primary_image||item.images?.[0]?.image_url||item.images?.[0]||placeholderImg(56,64)}
                         className="w-14 h-16 rounded-xl object-cover bg-gray-100 flex-shrink-0" />
                       <div className="flex-1">
                         <p className="text-sm font-semibold text-navy-500">{item.name}</p>
@@ -643,8 +641,7 @@ export default function CheckoutPage({ cart, navigate, setCart, user }) {
                 <div key={`${item.id}-${item.size}`} className="flex gap-3 items-center">
                   <div className="relative flex-shrink-0">
                     <img
-                      src={item.primary_image||item.images?.[0]?.image_url||item.images?.[0]||'placeholderImg(48,56)'}
-                      alt={item.name}
+                   src={item.primary_image||item.images?.[0]?.image_url||item.images?.[0]||placeholderImg(48,56)}
                       className="w-12 h-14 rounded-lg object-cover bg-gray-100" />
                     <span className="absolute -top-1.5 -right-1.5 bg-navy-500 text-white w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center">
                       {item.quantity}
