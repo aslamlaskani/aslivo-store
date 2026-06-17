@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ordersAPI } from '../api';
+import { placeholderImg } from '../utils/placeholder';
 
 export default function AdminOrders({ orders, filter, statusColors, updateOrderStatus, reloadOrders }) {
   const [selectedOrder, setSelectedOrder]   = useState(null);

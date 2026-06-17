@@ -1,3 +1,4 @@
+import { placeholderImg } from '../utils/placeholder';
 const products = [
   {
     id: 1,

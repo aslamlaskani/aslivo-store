@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { placeholderImg } from '../utils/placeholder';
 export default function WishlistPage({ wishlist, navigate, addToCart, toggleWishlist }) {
 
   const BADGE = {
@@ -88,10 +88,10 @@ export default function WishlistPage({ wishlist, navigate, addToCart, toggleWish
         <div style={{ position: 'relative', paddingTop: '128%', overflow: 'hidden',
           background: '#f7f4ef', flexShrink: 0 }}>
           <img
-            src={product.primary_image || product.images?.[0]?.image_url || product.images?.[0] || 'https://via.placeholder.com/300x380'}
+            src={product.primary_image || product.images?.[0]?.image_url || product.images?.[0] || placeholderImg(300, 380)}
             alt={product.name}
             onClick={() => navigate('product', product)}
-            onError={e => { e.target.src = 'https://via.placeholder.com/300x380'; }}
+            onError={e => { e.target.src = placeholderImg(300, 380); }}
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
               objectFit: 'cover',
               transform: hovered ? 'scale(1.06)' : 'scale(1)',

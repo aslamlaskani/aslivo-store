@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-
+import { placeholderImg } from '../utils/placeholder';
 export default function FlashSaleBanner({ navigate }) {
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
   const endTimeRef = useRef(null);

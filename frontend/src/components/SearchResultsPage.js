@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { productsAPI } from '../api';
+import { placeholderImg } from '../utils/placeholder';
 
 export default function SearchResultsPage({ navigate, addToCart, wishlist, toggleWishlist, searchQuery: initialQuery }) {
   const [query, setQuery] = useState(initialQuery || '');
@@ -87,7 +88,7 @@ export default function SearchResultsPage({ navigate, addToCart, wishlist, toggl
     <div className="product-card group">
       <div className="relative overflow-hidden aspect-[3/4]">
         <img
-          src={product.primary_image || 'https://via.placeholder.com/300x400'}
+          src={product.primary_image || 'placeholderImg(300,400)'}
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 cursor-pointer"
           onClick={() => navigate('product', product)}

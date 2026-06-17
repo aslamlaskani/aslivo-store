@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { authAPI, setTokens } from '../api';
-
+import { placeholderImg } from '../utils/placeholder';
 /* ── OTP 6-box input ── */
 function OTPInput({ value, onChange, disabled }) {
   const inputs = useRef([]);

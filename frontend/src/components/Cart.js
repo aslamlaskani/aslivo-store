@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { CartContext } from '../context/CartContext';
-
+import { placeholderImg } from '../utils/placeholder';
 const Cart = () => {
   const { cartItems, removeItem, clearCart } = useContext(CartContext);
 

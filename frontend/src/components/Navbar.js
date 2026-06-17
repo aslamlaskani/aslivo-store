@@ -4,7 +4,7 @@ import song1 from '../assets/music/song1.mp3';
 import song2 from '../assets/music/song2.mp3';
 import song3 from '../assets/music/song3.mp3';
 import song4 from '../assets/music/song4.mp3';
-
+import { placeholderImg } from '../utils/placeholder';
 /* ─────────────────────────────────────────────
    PLAYLIST — replace src with your own tracks
    Free music: pixabay.com/music / mixkit.co

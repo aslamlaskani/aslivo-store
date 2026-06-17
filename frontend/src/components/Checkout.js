@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { placeholderImg } from '../utils/placeholder';
 const Checkout = () => {
   const [form, setForm] = useState({
     name: '',

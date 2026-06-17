@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ordersAPI } from '../api';
-
+import { placeholderImg } from '../utils/placeholder';
 export default function CartPage({ cart, navigate, removeFromCart, updateQuantity }) {
   const [couponCode, setCouponCode] = useState('');
   const [couponApplied, setCouponApplied] = useState(false);

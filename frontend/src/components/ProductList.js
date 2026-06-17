@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-
+import { placeholderImg } from '../utils/placeholder';
 const ProductDetail = () => {
   const { id } = useParams();
 

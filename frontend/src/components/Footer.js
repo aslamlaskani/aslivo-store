@@ -1,6 +1,6 @@
 import React from 'react';
 import logo from '../assets/logo.png';
-
+import { placeholderImg } from '../utils/placeholder';
 export default function Footer({ navigate }) {
 
   const shopLinks = [

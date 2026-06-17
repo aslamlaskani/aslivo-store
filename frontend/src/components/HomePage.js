@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { productsAPI } from '../api';
-
+import { placeholderImg } from '../utils/placeholder';
 export default function HomePage({ navigate, addToCart, wishlist, toggleWishlist }) {
   const [featured, setFeatured] = useState([]);
   const [newArrivals, setNewArrivals] = useState([]);
@@ -123,9 +123,9 @@ const ProductCard = ({ product }) => {
       {/* Image — square ratio */}
       <div style={{ position: 'relative', paddingTop: '100%', overflow: 'hidden', background: '#f7f4ef', flexShrink: 0 }}>
         <img
-          src={product.primary_image || 'https://via.placeholder.com/300x300'}
+          src={product.primary_image || 'placeholderImg(300,300)'}
           alt={product.name}
-          onError={e => { e.target.src = 'https://via.placeholder.com/300x300'; }}
+          onError={e => { e.target.src = 'placeholderImg(300,300)'; }}
           style={{
             position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
             transition: 'transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)',

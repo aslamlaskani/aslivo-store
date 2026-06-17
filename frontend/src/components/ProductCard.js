@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { placeholderImg } from '../utils/placeholder';
 export default function ProductCard({ product, navigate, addToCart, wishlist, toggleWishlist }) {
   const [hovered, setHovered] = useState(false);
   const [imgIndex, setImgIndex] = useState(0);

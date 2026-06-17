@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { productsAPI } from '../api';
+import { placeholderImg } from '../utils/placeholder';
 
 export default function ProductPage({ product, navigate, addToCart, wishlist, toggleWishlist }) {
   const [fullProduct, setFullProduct]     = useState(null);
@@ -62,7 +63,7 @@ export default function ProductPage({ product, navigate, addToCart, wishlist, to
 
   const images = fullProduct?.images?.length > 0
     ? fullProduct.images.map(img => img.image_url || img.image)
-    : [product?.primary_image || 'https://via.placeholder.com/600x800'];
+    : [product?.primary_image || 'placeholderImg(300,360)'];
 
   const sizes  = [...new Set(fullProduct?.variants?.filter(v => v.size).map(v => v.size)  || [])];
   const colors = [...new Set(fullProduct?.variants?.filter(v => v.color).map(v => v.color) || [])];
@@ -708,8 +709,8 @@ function RelatedCard({ rp, navigate, addToCart, BADGE }) {
 
       <div style={{ position:'relative', paddingTop:'120%', overflow:'hidden',
         background:'#f7f4ef', flexShrink:0 }}>
-        <img src={rp.primary_image||'https://via.placeholder.com/300x360'} alt={rp.name}
-          onError={e=>{ e.target.src='https://via.placeholder.com/300x360'; }}
+        <img src={rp.primary_image||'placeholderImg(300,360)'} alt={rp.name}
+          onError={e=>{ e.target.src='placeholderImg(300,360)'; }}
           style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover',
             transform: hovered?'scale(1.05)':'scale(1)',
             transition:'transform .5s cubic-bezier(.25,.46,.45,.94)' }} />

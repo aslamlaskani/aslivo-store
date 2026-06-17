@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { productsAPI } from '../api';
+import { placeholderImg } from '../utils/placeholder';
 
 export default function FlashSalePage({ navigate, addToCart, wishlist, toggleWishlist }) {
   const [products, setProducts] = useState([]);
@@ -94,10 +95,10 @@ export default function FlashSalePage({ navigate, addToCart, wishlist, toggleWis
         <div style={{ position: 'relative', paddingTop: '128%', overflow: 'hidden',
           background: 'rgba(255,255,255,0.04)', flexShrink: 0 }}>
           <img
-            src={product.primary_image || 'https://via.placeholder.com/300x380'}
+            src={product.primary_image || 'placeholderImg(300,380)'}
             alt={product.name}
             onClick={() => navigate('product', product)}
-            onError={e => { e.target.src = 'https://via.placeholder.com/300x380'; }}
+            onError={e => { e.target.src = 'placeholderImg(300,380)'; }}
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%',
               objectFit: 'cover', cursor: 'pointer',
               transform: hovered ? 'scale(1.06)' : 'scale(1)',

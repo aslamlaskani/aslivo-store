@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { productsAPI } from '../api';
+import { placeholderImg } from '../utils/placeholder';
 
 // const BASE_URL = 'http://127.0.0.1:8000';
 const BASE_URL = 'https://aslivo-store-2.onrender.com';

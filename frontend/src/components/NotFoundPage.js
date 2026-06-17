@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
+import { placeholderImg } from '../utils/placeholder';
 export default function NotFoundPage({ navigate }) {
   const [count, setCount] = useState(10);
 

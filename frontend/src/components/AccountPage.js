@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { authAPI, ordersAPI } from '../api';
+import { placeholderImg } from '../utils/placeholder';
 
 export default function AccountPage({ navigate, user, handleLogout }) {
   const [activeTab, setActiveTab] = useState('profile');

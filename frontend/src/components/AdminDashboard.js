@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AdminOrders from './AdminOrders';
 import AdminProducts from './AdminProducts';
 import { ordersAPI } from '../api';
+import { placeholderImg } from '../utils/placeholder';
 
 export default function AdminDashboard({ navigate }) {
   const [activeSection, setActiveSection] = useState('dashboard');
