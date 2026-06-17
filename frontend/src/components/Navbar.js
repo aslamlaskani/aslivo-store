@@ -143,7 +143,7 @@ useEffect(() => {
     { page:'wishlist',  label:`Wishlist${wishlist?.length>0?` (${wishlist.length})`:''}`, icon:'❤️' },
     { page:'cart',      label:`Cart${cartCount>0?` (${cartCount})`:''}`, icon:'🛒' },
     user
-      ? { page:'account', label:'My Account',         icon:'👤' }
+      ? { page:'account', label:'My Account', icon:'👤' }
       : { page:'login',   label:'Sign In / Register', icon:'🔐' },
   ];
 
