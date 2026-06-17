@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const BASE_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000';
+// const BASE_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000';
+const BASE_URL = 'https://aslivo-store-2.onrender.com';
 
 const api = axios.create({
   baseURL: BASE_URL,
