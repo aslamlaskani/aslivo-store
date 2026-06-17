@@ -4,11 +4,7 @@ import song1 from '../assets/music/song1.mp3';
 import song2 from '../assets/music/song2.mp3';
 import song3 from '../assets/music/song3.mp3';
 import song4 from '../assets/music/song4.mp3';
-import { placeholderImg } from '../utils/placeholder';
-/* ─────────────────────────────────────────────
-   PLAYLIST — replace src with your own tracks
-   Free music: pixabay.com/music / mixkit.co
-───────────────────────────────────────────── */
+
 const PLAYLIST = [
   { title: 'Song 1', artist: 'Aslivo Store', src: song1 },
   { title: 'Song 2', artist: 'Aslivo Store', src: song2 },
@@ -16,10 +12,9 @@ const PLAYLIST = [
   { title: 'Song 4', artist: 'Aslivo Store', src: song4 },
 ];
 
-/* ── Avatar — shows uploaded photo if present, else initial, else generic icon ── */
+/* ── Avatar ── */
 function UserAvatar({ user, size = 22, fontSize = 10 }) {
   const initial = user?.firstName?.charAt(0) || user?.email?.charAt(0) || '';
-
   if (user?.avatar) {
     return (
       <div style={{ width:`${size}px`, height:`${size}px`, borderRadius:'50%', flexShrink:0,
@@ -27,7 +22,6 @@ function UserAvatar({ user, size = 22, fontSize = 10 }) {
         backgroundPosition:'center', border:'1px solid rgba(255,255,255,0.08)' }} />
     );
   }
-
   if (initial) {
     return (
       <div style={{ width:`${size}px`, height:`${size}px`, borderRadius:'50%', flexShrink:0,
@@ -38,7 +32,6 @@ function UserAvatar({ user, size = 22, fontSize = 10 }) {
       </div>
     );
   }
-
   return (
     <div style={{ width:`${size}px`, height:`${size}px`, borderRadius:'50%', flexShrink:0,
       background:'linear-gradient(135deg,#c9a96e,#b8935a)',
@@ -65,9 +58,11 @@ export default function Navbar({ navigate, cartCount, currentPage, wishlist, use
   const [volume, setVolume]             = useState(0.35);
   const [progress, setProgress]         = useState(0);
   const [playerOpen, setPlayerOpen]     = useState(false);
-  const audioRef  = useRef(null);
-  const progRef   = useRef(null);
-  const track     = PLAYLIST[trackIdx];
+  const audioRef    = useRef(null);
+  const progRef     = useRef(null);
+  // track whether the first-gesture autoplay already fired
+  const autoplayFired = useRef(false);
+  const track = PLAYLIST[trackIdx];
 
   /* scroll */
   useEffect(() => {
@@ -82,10 +77,29 @@ export default function Navbar({ navigate, cartCount, currentPage, wishlist, use
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
 
-  /* audio core — re-runs when track changes */
+  /* ─────────────────────────────────────────────────────────
+     STEP 1: Pre-load the first track immediately on mount
+     so the audio element is ready the moment a gesture fires.
+  ───────────────────────────────────────────────────────── */
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
+    audio.volume = volume;
+    audio.src    = PLAYLIST[0].src;
+    audio.load();           // prime the buffer — no play() yet (browser will block)
+  }, []);                   // runs once on mount
+
+  /* ─────────────────────────────────────────────────────────
+     STEP 2: When track index changes (after first load),
+     swap src, reload, and continue playing if already playing.
+  ───────────────────────────────────────────────────────── */
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    // skip the very first render — already handled above
+    if (trackIdx === 0 && !autoplayFired.current) return;
+
     audio.volume = volume;
     audio.src    = track.src;
     audio.load();
@@ -106,37 +120,75 @@ export default function Navbar({ navigate, cartCount, currentPage, wishlist, use
     };
   }, [trackIdx]);
 
-  /* volume sync */
-  useEffect(() => { if (audioRef.current) audioRef.current.volume = volume; }, [volume]);
-
- /* autoplay on first user gesture — catches ANY interaction */
-useEffect(() => {
-  let triggered = false;
-
-  const tryPlay = () => {
-    if (triggered) return;
-    triggered = true;
+  /* timeupdate for track 0 (the pre-loaded one) */
+  useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.volume = volume;
-    audio.play()
-      .then(() => setPlaying(true))
-      .catch(() => {});
-    ['click','touchstart','keydown','scroll','mousemove'].forEach(evt =>
-      document.removeEventListener(evt, tryPlay)
-    );
-  };
+    const onTime = () => {
+      if (audio.duration) setProgress((audio.currentTime / audio.duration) * 100);
+    };
+    const onEnded = () => {
+      if (autoplay) setTrackIdx(i => (i + 1) % PLAYLIST.length);
+      else setPlaying(false);
+    };
+    audio.addEventListener('timeupdate', onTime);
+    audio.addEventListener('ended', onEnded);
+    return () => {
+      audio.removeEventListener('timeupdate', onTime);
+      audio.removeEventListener('ended', onEnded);
+    };
+  }, []);
 
-  ['click','touchstart','keydown','scroll','mousemove'].forEach(evt =>
-    document.addEventListener(evt, tryPlay, { passive: true })
-  );
+  /* volume sync */
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = volume;
+  }, [volume]);
 
-  return () => {
-    ['click','touchstart','keydown','scroll','mousemove'].forEach(evt =>
-      document.removeEventListener(evt, tryPlay)
-    );
-  };
-}, []);
+  /* ─────────────────────────────────────────────────────────
+     STEP 3: INSTANT AUTOPLAY on first user gesture.
+
+     Because the audio is already pre-loaded (src + load() done
+     at mount), calling .play() here fires instantly — no delay.
+
+     We listen on the capture phase (true) so we catch the event
+     before any child handler can stop it.
+  ───────────────────────────────────────────────────────── */
+  useEffect(() => {
+    const tryPlay = () => {
+      if (autoplayFired.current) return;   // only once
+      autoplayFired.current = true;
+
+      const audio = audioRef.current;
+      if (!audio) return;
+
+      audio.volume = volume;
+
+      // If src isn't set yet (race condition safety), set it now
+      if (!audio.src || audio.src === window.location.href) {
+        audio.src = PLAYLIST[0].src;
+        audio.load();
+      }
+
+      audio.play()
+        .then(() => {
+          setPlaying(true);
+        })
+        .catch(() => {
+          // Browser still blocked (very rare after a real gesture) — silent fail
+        });
+
+      EVENTS.forEach(evt => document.removeEventListener(evt, tryPlay, true));
+    };
+
+    const EVENTS = ['click', 'touchstart', 'keydown', 'mousedown', 'pointerdown'];
+    EVENTS.forEach(evt => document.addEventListener(evt, tryPlay, true));  // capture phase
+
+    return () => {
+      EVENTS.forEach(evt => document.removeEventListener(evt, tryPlay, true));
+    };
+  }, []);  // runs once
+
+  /* ── Controls ── */
   const togglePlay = () => {
     const a = audioRef.current;
     if (!a) return;
@@ -169,8 +221,8 @@ useEffect(() => {
     if (query.trim()) { onSearch(query.trim()); setSearchOpen(false); setSearchQuery(''); setMenuOpen(false); }
   };
 
-  const navLinks   = [{ page:'home', label:'Home' }, { page:'shop', label:'Shop' }];
-  const quickTags  = ['Men', 'Women', 'Bags', 'Sneakers', 'Jackets', 'Dresses'];
+  const navLinks    = [{ page:'home', label:'Home' }, { page:'shop', label:'Shop' }];
+  const quickTags   = ['Men', 'Women', 'Bags', 'Sneakers', 'Jackets', 'Dresses'];
   const mobileLinks = [
     { page:'home',      label:'Home',        icon:'🏠' },
     { page:'shop',      label:'Shop',        icon:'🛍️' },
@@ -179,7 +231,7 @@ useEffect(() => {
     { page:'wishlist',  label:`Wishlist${wishlist?.length>0?` (${wishlist.length})`:''}`, icon:'❤️' },
     { page:'cart',      label:`Cart${cartCount>0?` (${cartCount})`:''}`, icon:'🛒' },
     user
-      ? { page:'account', label:'My Account', icon:'👤' }
+      ? { page:'account', label:'My Account',        icon:'👤' }
       : { page:'login',   label:'Sign In / Register', icon:'🔐' },
   ];
 
@@ -230,21 +282,17 @@ useEffect(() => {
           .logo-text    { display:block !important; }
         }
 
-        /* eq bars */
         .eq-bar { width:3px; border-radius:2px; background:#c9a96e; }
         .eq-bar:nth-child(1) { animation:barPulse .55s ease infinite; }
         .eq-bar:nth-child(2) { animation:barPulse .55s ease .12s infinite; }
         .eq-bar:nth-child(3) { animation:barPulse .55s ease .25s infinite; }
 
-        /* vinyl */
         .vinyl { animation:spin 4s linear infinite; }
         .vinyl.paused { animation-play-state:paused; }
 
-        /* track title scroll */
         .marquee-wrap  { overflow:hidden; white-space:nowrap; }
         .marquee-inner { display:inline-block; animation:marquee 9s linear infinite; }
 
-        /* player controls */
         .ctrl { width:32px; height:32px; border-radius:50%; border:none;
           background:rgba(255,255,255,0.06); cursor:pointer;
           display:flex; align-items:center; justify-content:center;
@@ -253,29 +301,20 @@ useEffect(() => {
         .ctrl.big    { width:42px; height:42px; background:linear-gradient(135deg,#c9a96e,#b8935a) !important; color:#0d1b2a; }
         .ctrl.big:hover { opacity:.9; }
 
-        /* progress bar */
         .prog-wrap { cursor:pointer; height:4px; border-radius:100px;
           background:rgba(255,255,255,0.09); position:relative; }
         .prog-fill { height:100%; border-radius:100px;
           background:linear-gradient(90deg,#c9a96e,#e8c98a); pointer-events:none; }
-        .prog-wrap:hover::after {
-          content:''; position:absolute; top:50%; right:auto;
-          width:10px; height:10px; border-radius:50%; background:#c9a96e;
-          transform:translateY(-50%); pointer-events:none;
-        }
 
-        /* volume */
         .vol { -webkit-appearance:none; appearance:none;
           width:100%; height:3px; border-radius:100px;
           background:rgba(255,255,255,0.08); outline:none; cursor:pointer; }
         .vol::-webkit-slider-thumb { -webkit-appearance:none;
           width:11px; height:11px; border-radius:50%; background:#c9a96e; cursor:pointer; }
 
-        /* music button active */
         .music-btn-active { background:rgba(201,169,110,0.1) !important;
           border:1px solid rgba(201,169,110,0.2) !important; }
 
-        /* player card */
         .player-card {
           position:fixed; right:14px; bottom:18px; z-index:1050;
           width:275px;
@@ -343,7 +382,7 @@ useEffect(() => {
           {/* Right icons */}
           <div style={{ display:'flex', alignItems:'center', gap:'2px', flexShrink:0 }}>
 
-            {/* ── MUSIC BUTTON ── */}
+            {/* Music button */}
             <button className={`nb-icon${playing ? ' music-btn-active' : ''}`}
               onClick={() => setPlayerOpen(o => !o)} aria-label="Music player"
               style={{ borderRadius:'9px', border: playing ? '' : '1px solid transparent' }}>
@@ -392,7 +431,7 @@ useEffect(() => {
               {cartCount>0 && <span className="nb-badge" style={{ background:'#c9a96e', color:'#0d1b2a' }}>{cartCount>9?'9+':cartCount}</span>}
             </button>
 
-            {/* User desktop — same plain icon style as music/search/wishlist/cart */}
+            {/* User */}
             <button className="nb-icon desktop-only"
               onClick={() => navigate(user ? 'account' : 'login')}
               aria-label={user ? 'My Account' : 'Sign In'}>
@@ -547,9 +586,7 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* ════════════════════════════════════
-          MUSIC PLAYER  (bottom-right float)
-      ════════════════════════════════════ */}
+      {/* ════ MUSIC PLAYER ════ */}
       {playerOpen && (
         <div className="player-card">
 
@@ -566,7 +603,6 @@ useEffect(() => {
                 textTransform:'uppercase', color:'#c9a96e' }}>Store Radio</span>
             </div>
             <div style={{ display:'flex', alignItems:'center', gap:'6px' }}>
-              {/* Autoplay toggle */}
               <button onClick={() => setAutoplay(a => !a)}
                 style={{ display:'flex', alignItems:'center', gap:'4px',
                   padding:'3px 9px', borderRadius:'100px', border:'none', cursor:'pointer',
@@ -580,7 +616,6 @@ useEffect(() => {
                   display:'inline-block', flexShrink:0 }} />
                 Auto
               </button>
-              {/* Close */}
               <button onClick={() => setPlayerOpen(false)}
                 style={{ background:'none', border:'none', cursor:'pointer', padding:'2px',
                   color:'rgba(255,255,255,0.28)', display:'flex', transition:'color .15s' }}
@@ -596,7 +631,6 @@ useEffect(() => {
 
           {/* Album art + info */}
           <div style={{ padding:'15px 15px 10px', display:'flex', alignItems:'center', gap:'13px' }}>
-            {/* Spinning vinyl */}
             <div style={{ position:'relative', flexShrink:0, width:'54px', height:'54px' }}>
               <div className={`vinyl${playing ? '' : ' paused'}`}
                 style={{ width:'54px', height:'54px', borderRadius:'50%',
@@ -619,7 +653,7 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* Progress bar */}
+          {/* Progress */}
           <div style={{ padding:'0 15px 10px' }}>
             <div className="prog-wrap" ref={progRef} onClick={seekTo}>
               <div className="prog-fill" style={{ width:`${progress}%` }} />
