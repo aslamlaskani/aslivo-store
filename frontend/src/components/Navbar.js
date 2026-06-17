@@ -16,6 +16,42 @@ const PLAYLIST = [
   { title: 'Song 4', artist: 'Aslivo Store', src: song4 },
 ];
 
+/* ── Avatar — shows uploaded photo if present, else initial, else generic icon ── */
+function UserAvatar({ user, size = 22, fontSize = 10 }) {
+  const initial = user?.firstName?.charAt(0) || user?.email?.charAt(0) || '';
+
+  if (user?.avatar) {
+    return (
+      <div style={{ width:`${size}px`, height:`${size}px`, borderRadius:'50%', flexShrink:0,
+        backgroundImage:`url(${user.avatar})`, backgroundSize:'cover',
+        backgroundPosition:'center', border:'1px solid rgba(255,255,255,0.08)' }} />
+    );
+  }
+
+  if (initial) {
+    return (
+      <div style={{ width:`${size}px`, height:`${size}px`, borderRadius:'50%', flexShrink:0,
+        background:'linear-gradient(135deg,#c9a96e,#b8935a)',
+        display:'flex', alignItems:'center', justifyContent:'center',
+        fontSize:`${fontSize}px`, fontWeight:800, color:'#0d1b2a' }}>
+        {initial.toUpperCase()}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ width:`${size}px`, height:`${size}px`, borderRadius:'50%', flexShrink:0,
+      background:'linear-gradient(135deg,#c9a96e,#b8935a)',
+      display:'flex', alignItems:'center', justifyContent:'center' }}>
+      <svg width={size*0.55} height={size*0.55} viewBox="0 0 24 24" fill="none"
+        stroke="#0d1b2a" strokeWidth="2.2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </div>
+  );
+}
+
 export default function Navbar({ navigate, cartCount, currentPage, wishlist, user, handleLogout, onSearch }) {
   const [menuOpen, setMenuOpen]         = useState(false);
   const [scrolled, setScrolled]         = useState(false);
@@ -361,12 +397,7 @@ useEffect(() => {
               ? <button className="nb-icon desktop-only" onClick={() => navigate('account')}
                   style={{ width:'auto', padding:'0 10px', gap:'7px', borderRadius:'100px',
                     background:'rgba(201,169,110,0.08)', border:'1px solid rgba(201,169,110,0.2)' }}>
-                  <div style={{ width:'22px', height:'22px', borderRadius:'50%',
-                    background:'linear-gradient(135deg,#c9a96e,#b8935a)',
-                    display:'flex', alignItems:'center', justifyContent:'center',
-                    fontSize:'10px', fontWeight:800, color:'#0d1b2a', flexShrink:0 }}>
-                    {user.firstName?.charAt(0).toUpperCase()}
-                  </div>
+                  <UserAvatar user={user} size={22} fontSize={10} />
                   <span style={{ fontSize:'12px', fontWeight:600, color:'#c9a96e',
                     maxWidth:'72px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                     {user.firstName}
@@ -472,12 +503,7 @@ useEffect(() => {
         {user && (
           <div style={{ padding:'14px 16px', borderBottom:'1px solid rgba(255,255,255,0.05)',
             display:'flex', alignItems:'center', gap:'12px', background:'rgba(201,169,110,0.04)' }}>
-            <div style={{ width:'40px', height:'40px', borderRadius:'50%', flexShrink:0,
-              background:'linear-gradient(135deg,#c9a96e,#b8935a)',
-              display:'flex', alignItems:'center', justifyContent:'center',
-              fontSize:'15px', fontWeight:800, color:'#0d1b2a' }}>
-              {user.firstName?.charAt(0).toUpperCase()}
-            </div>
+            <UserAvatar user={user} size={40} fontSize={15} />
             <div>
               <p style={{ fontSize:'14px', fontWeight:700, color:'#fff', margin:'0 0 2px' }}>{user.firstName} {user.lastName}</p>
               <p style={{ fontSize:'11px', color:'rgba(255,255,255,0.35)', margin:0 }}>{user.email}</p>
