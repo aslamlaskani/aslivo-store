@@ -63,7 +63,7 @@ export default function ProductPage({ product, navigate, addToCart, wishlist, to
 
   const images = fullProduct?.images?.length > 0
     ? fullProduct.images.map(img => img.image_url || img.image)
-    : [product?.primary_image || 'placeholderImg(300,360)'];
+    : [product?.primary_image || 'placeholderImg(600,800)'];
 
   const sizes  = [...new Set(fullProduct?.variants?.filter(v => v.size).map(v => v.size)  || [])];
   const colors = [...new Set(fullProduct?.variants?.filter(v => v.color).map(v => v.color) || [])];

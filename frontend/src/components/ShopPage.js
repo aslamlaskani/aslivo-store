@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { productsAPI } from '../api';
 import { placeholderImg } from '../utils/placeholder';
-
 export default function ShopPage({ navigate, addToCart, wishlist, toggleWishlist }) {
   const [products, setProducts]       = useState([]);
   const [categories, setCategories]   = useState([]);
