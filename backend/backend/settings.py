@@ -109,6 +109,9 @@ CORS_ALLOWED_ORIGINS = os.getenv(
     "CORS_ALLOWED_ORIGINS",
     "http://localhost:3000,http://127.0.0.1:3000"
 ).split(",")
+CORS_ALLOWED_ORIGINS = [
+    "https://aslivo-store-3.onrender.com",
+]
 
 CSRF_TRUSTED_ORIGINS = os.getenv(
     "CSRF_TRUSTED_ORIGINS",
