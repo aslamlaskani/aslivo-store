@@ -3,7 +3,8 @@ import logo from '../assets/logo.png';
 import { setTokens } from '../api';
 import axios from 'axios';
 
-const BASE_URL = 'http://127.0.0.1:8000';
+// const BASE_URL = 'http://127.0.0.1:8000';
+const BASE_URL = 'https://aslivo-store-2.onrender.com';
 
 export default function AdminLogin({ onLogin }) {
   const [form, setForm] = useState({ email: '', password: '' });
