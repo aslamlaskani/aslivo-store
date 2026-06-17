@@ -392,27 +392,18 @@ useEffect(() => {
               {cartCount>0 && <span className="nb-badge" style={{ background:'#c9a96e', color:'#0d1b2a' }}>{cartCount>9?'9+':cartCount}</span>}
             </button>
 
-            {/* User desktop */}
-            {user
-              ? <button className="nb-icon desktop-only" onClick={() => navigate('account')}
-                  style={{ width:'auto', padding:'0 10px', gap:'7px', borderRadius:'100px',
-                    background:'rgba(201,169,110,0.08)', border:'1px solid rgba(201,169,110,0.2)' }}>
-                  <UserAvatar user={user} size={22} fontSize={10} />
-                  <span style={{ fontSize:'12px', fontWeight:600, color:'#c9a96e',
-                    maxWidth:'72px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                    {user.firstName}
-                  </span>
-                </button>
-              : <button className="nb-icon desktop-only" onClick={() => navigate('login')}
-                  style={{ width:'auto', padding:'0 12px', gap:'6px', borderRadius:'100px',
-                    background:'rgba(201,169,110,0.08)', border:'1px solid rgba(201,169,110,0.2)' }}>
-                  <svg width="13" height="13" fill="none" stroke="#c9a96e" strokeWidth="2" viewBox="0 0 24 24">
+            {/* User desktop — same plain icon style as music/search/wishlist/cart */}
+            <button className="nb-icon desktop-only"
+              onClick={() => navigate(user ? 'account' : 'login')}
+              aria-label={user ? 'My Account' : 'Sign In'}>
+              {user
+                ? <UserAvatar user={user} size={22} fontSize={10} />
+                : <svg width="17" height="17" fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="2" viewBox="0 0 24 24">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
                   </svg>
-                  <span style={{ fontSize:'12px', fontWeight:700, color:'#c9a96e', whiteSpace:'nowrap' }}>Sign In</span>
-                </button>
-            }
+              }
+            </button>
 
             <div className="desktop-only" style={{ width:'1px', height:'22px', background:'rgba(255,255,255,0.07)', margin:'0 2px' }} />
 
