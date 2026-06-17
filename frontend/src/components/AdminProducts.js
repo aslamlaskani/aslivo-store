@@ -4,8 +4,12 @@ import { productsAPI } from '../api';
 // const BASE_URL = 'http://127.0.0.1:8000';
 const BASE_URL = 'https://aslivo-store-2.onrender.com';
 
+// Local placeholder — no external dependency, always works (fixes via.placeholder.com ERR_CONNECTION_CLOSED)
+const NO_IMAGE_PLACEHOLDER =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='400' viewBox='0 0 300 400'%3E%3Crect width='300' height='400' fill='%231a1d2e'/%3E%3Ctext x='50%25' y='50%25' font-family='sans-serif' font-size='16' fill='%23666' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E";
+
 const getImageUrl = (url) => {
-  if (!url) return 'https://via.placeholder.com/300x400?text=No+Image';
+  if (!url) return NO_IMAGE_PLACEHOLDER;
   if (url.startsWith('http')) return url;
   return `${BASE_URL}${url}`;
 };
@@ -730,6 +734,7 @@ export default function AdminProducts() {
                     {editProduct.images.map((img,i) => (
                       <img key={i}
                         src={getImageUrl(img.image_url || img.image)} alt={`Product ${i+1}`}
+                        onError={e=>{ e.target.onerror = null; e.target.src = NO_IMAGE_PLACEHOLDER; }}
                         style={{ width:'100%', aspectRatio:'1/1', borderRadius:'10px',
                           objectFit:'cover', border:'1px solid rgba(255,255,255,0.1)', display:'block' }} />
                     ))}
@@ -837,7 +842,7 @@ export default function AdminProducts() {
                   background:'rgba(255,255,255,0.04)' }}>
                   <img src={getImageUrl(product.primary_image)} alt={product.name}
                     className="prod-img"
-                    onError={e=>{ e.target.src='https://via.placeholder.com/300x400?text=No+Image'; }}
+                    onError={e=>{ e.target.onerror = null; e.target.src = NO_IMAGE_PLACEHOLDER; }}
                     style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }} />
 
                   {/* Badges top-left */}
